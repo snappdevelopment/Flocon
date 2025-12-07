@@ -10,9 +10,11 @@ import io.github.openflocon.domain.dashboard.models.DashboardDomainModel
 import io.github.openflocon.domain.dashboard.models.DashboardId
 import io.github.openflocon.domain.dashboard.repository.DashboardRepository
 import io.github.openflocon.domain.device.models.DeviceIdAndPackageNameDomainModel
+import io.github.openflocon.domain.device.repository.DevicesRepository
 import io.github.openflocon.domain.messages.models.FloconIncomingMessageDomainModel
 import io.github.openflocon.domain.messages.repository.MessagesReceiverRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
@@ -21,6 +23,7 @@ class DashboardRepositoryImpl(
     private val dashboardLocalDataSource: DashboardLocalDataSource,
     private val toDeviceDashboardDataSource: ToDeviceDashboardDataSource,
     private val deviceDashboardsDataSource: DeviceDashboardsDataSource,
+    private val devicesRepository: DevicesRepository,
 ) : DashboardRepository,
     MessagesReceiverRepository {
 
@@ -32,6 +35,11 @@ class DashboardRepositoryImpl(
     ) {
         withContext(dispatcherProvider.data) {
             val item = toDeviceDashboardDataSource.getItem(message) ?: return@withContext
+
+            deviceDashboardsDataSource.saveDashboard(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                dashboard = item
+            )
 
             dashboardLocalDataSource.saveDashboard(
                 deviceIdAndPackageName = deviceIdAndPackageName,
@@ -50,10 +58,20 @@ class DashboardRepositoryImpl(
     override fun observeDashboard(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
         dashboardId: DashboardId
-    ): Flow<DashboardDomainModel?> = dashboardLocalDataSource.observeDashboard(
-        deviceIdAndPackageName = deviceIdAndPackageName,
-        dashboardId = dashboardId,
-    ).flowOn(dispatcherProvider.data)
+    ): Flow<DashboardDomainModel?> = devicesRepository.activeDevices.flatMapLatest { activeDevices ->
+        val isDeviceConnected = activeDevices.contains(deviceIdAndPackageName)
+        if (isDeviceConnected) {
+            deviceDashboardsDataSource.observeDashboard(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                dashboardId = dashboardId,
+            )
+        } else {
+            dashboardLocalDataSource.observeDashboard(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+                dashboardId = dashboardId,
+            )
+        }
+    }.flowOn(dispatcherProvider.data)
 
     override suspend fun sendClickEvent(
         deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel,
@@ -129,9 +147,18 @@ class DashboardRepositoryImpl(
         deviceIdAndPackageName = deviceIdAndPackageName,
     ).flowOn(dispatcherProvider.data)
 
-    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = dashboardLocalDataSource.observeDeviceDashboards(
-        deviceIdAndPackageName = deviceIdAndPackageName,
-    ).flowOn(dispatcherProvider.data)
+    override fun observeDeviceDashboards(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<List<DashboardId>> = devicesRepository.activeDevices.flatMapLatest { activeDevices ->
+        val isDeviceConnected = activeDevices.contains(deviceIdAndPackageName)
+        if (isDeviceConnected) {
+            deviceDashboardsDataSource.observeDeviceDashboards(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        } else {
+            dashboardLocalDataSource.observeDeviceDashboards(
+                deviceIdAndPackageName = deviceIdAndPackageName,
+            )
+        }
+    }.flowOn(dispatcherProvider.data)
 
     override fun observeDashboardArrangement(deviceIdAndPackageName: DeviceIdAndPackageNameDomainModel): Flow<DashboardArrangementDomainModel> = deviceDashboardsDataSource.observeDashboardArrangement(
         deviceIdAndPackageName = deviceIdAndPackageName,
