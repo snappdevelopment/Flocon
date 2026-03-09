@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlin.multiplatform)
 }
 
 kotlin {
@@ -16,8 +16,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.coroutinesCore)
-            implementation(libs.kotlinx.dateTime)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.paging.common)
 
             implementation(project.dependencies.platform(libs.koin.bom))

@@ -3,13 +3,13 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.ksp) // Add KSP plugin
     alias(libs.plugins.room)
-    alias(libs.plugins.aboutLibraries)
+    alias(libs.plugins.about.libraries)
 
     alias(libs.plugins.buildconfig)
 }
@@ -46,15 +46,15 @@ kotlin {
             implementation(compose.components.resources)
 
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.kotlinx.coroutinesCore)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.kotlinx.coroutines.core)
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
-            implementation(libs.kotlinx.serializationJson)
-            implementation(libs.kotlinx.dateTime)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.coil.compose)
@@ -88,8 +88,8 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutinesSwing)
-            implementation(libs.ktor.clientJava)
+            implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.java)
             // implementation(libs.ui.tooling.preview.desktop)
         }
     }

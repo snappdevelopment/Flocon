@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
@@ -19,8 +19,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.coroutinesCore)
-            implementation(libs.kotlinx.serializationJson)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.androidx.paging.common)
 
             implementation(project.dependencies.platform(libs.koin.bom))
