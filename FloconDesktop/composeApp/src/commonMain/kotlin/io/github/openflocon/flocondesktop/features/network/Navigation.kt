@@ -9,7 +9,9 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import io.github.openflocon.domain.settings.repository.SettingsRepository
 import io.github.openflocon.flocondesktop.app.MenuSceneStrategy
 import io.github.openflocon.flocondesktop.features.network.body.NetworkBodyWindow
+import io.github.openflocon.flocondesktop.features.network.body.NetworkDiffWindow
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkBodyDetailUi
+import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.detail.view.NetworkDetailScreen
 import io.github.openflocon.flocondesktop.features.network.list.view.NetworkScreen
 import io.github.openflocon.flocondesktop.features.network.mock.list.view.NetworkMocksWindow
@@ -53,6 +55,12 @@ internal sealed interface NetworkRoutes : FloconRoute {
         val json: String,
         val id: String = Uuid.random().toString()
     ) : NetworkRoutes
+
+    @Serializable
+    data class Diff(
+        val json: String,
+        val clipboardJson: String,
+    ) : NetworkRoutes
 }
 
 fun EntryProviderScope<FloconRoute>.networkRoutes() {
@@ -92,6 +100,16 @@ fun EntryProviderScope<FloconRoute>.networkRoutes() {
     ) {
         NetworkBodyWindow(
             body = NetworkBodyDetailUi(text = it.json)
+        )
+    }
+    entry<NetworkRoutes.Diff>(
+        metadata = WindowSceneStrategy.window()
+    ) {
+        NetworkDiffWindow(
+            diff = NetworkDiffUi(
+                json = it.json,
+                clipboardJson = it.clipboardJson
+            )
         )
     }
     entry<NetworkRoutes.DeepSearch>(

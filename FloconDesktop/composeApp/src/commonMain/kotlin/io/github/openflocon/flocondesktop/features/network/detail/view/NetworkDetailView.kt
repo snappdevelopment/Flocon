@@ -457,6 +457,13 @@ private fun Response(
                         actions = {
                             if (response.responseBodyIsNotBlank) {
                                 FloconIconButton(
+                                    tooltip = "Diff with Clipboard",
+                                    imageVector = Icons.Outlined.CopyAll,
+                                    onClick = { onAction(NetworkDetailAction.DiffWithClipboard(response.body)) }
+                                )
+                            }
+                            if (response.responseBodyIsNotBlank) {
+                                FloconIconButton(
                                     tooltip = "View body in app",
                                     imageVector = Icons.Outlined.OpenInFull,
                                     onClick = { onAction(NetworkDetailAction.JsonDetail(response.body),) }
