@@ -16,8 +16,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.CompareArrows
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.Compare
+import androidx.compose.material.icons.outlined.CompareArrows
 import androidx.compose.material.icons.outlined.CopyAll
+import androidx.compose.material.icons.outlined.Difference
 import androidx.compose.material.icons.outlined.OpenInFull
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Text
@@ -457,13 +461,6 @@ private fun Response(
                         actions = {
                             if (response.responseBodyIsNotBlank) {
                                 FloconIconButton(
-                                    tooltip = "Diff with Clipboard",
-                                    imageVector = Icons.Outlined.CopyAll,
-                                    onClick = { onAction(NetworkDetailAction.DiffWithClipboard(response.body)) }
-                                )
-                            }
-                            if (response.responseBodyIsNotBlank) {
-                                FloconIconButton(
                                     tooltip = "View body in app",
                                     imageVector = Icons.Outlined.OpenInFull,
                                     onClick = { onAction(NetworkDetailAction.JsonDetail(response.body),) }
@@ -474,6 +471,13 @@ private fun Response(
                                     tooltip = "Open in external editor",
                                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                                     onClick = { onAction(NetworkDetailAction.OpenBodyExternally.Response(response,)) }
+                                )
+                            }
+                            if (response.responseBodyIsNotBlank) {
+                                FloconIconButton(
+                                    tooltip = "Diff with Clipboard",
+                                    imageVector = Icons.Outlined.Difference,
+                                    onClick = { onAction(NetworkDetailAction.DiffWithClipboard(response.body)) }
                                 )
                             }
                             if (response.responseBodyIsNotBlank) {
