@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,10 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -151,6 +148,16 @@ fun MockEditorScreen(
                     text = "Expectation",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                )
+                FloconTextField(
+                    value = mock.displayName,
+                    onValueChange = { newValue ->
+                        mock = mock.copy(displayName = newValue)
+                    },
+                    label = defaultLabel("Display name"),
+                    placeholder = defaultPlaceHolder("Enter a display name"),
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = FloconTheme.colorPalette.primary,
                 )
                 FloconTextField(
                     value = mock.expectation.urlPattern ?: "",

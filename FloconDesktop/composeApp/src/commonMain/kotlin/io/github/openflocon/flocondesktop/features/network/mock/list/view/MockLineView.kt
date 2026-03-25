@@ -1,23 +1,24 @@
 package io.github.openflocon.flocondesktop.features.network.mock.list.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.openflocon.flocondesktop.features.network.mock.edition.model.MockNetworkMethodUi
 import io.github.openflocon.flocondesktop.features.network.mock.edition.view.MockNetworkMethodView
 import io.github.openflocon.flocondesktop.features.network.mock.list.model.MockNetworkLineUiModel
@@ -26,7 +27,6 @@ import io.github.openflocon.library.designsystem.components.FloconCheckbox
 import io.github.openflocon.library.designsystem.components.FloconIconButton
 import io.github.openflocon.library.designsystem.components.FloconSurface
 import io.github.openflocon.library.designsystem.components.FloconSwitch
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MockLineView(
@@ -38,7 +38,9 @@ fun MockLineView(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.padding(vertical = 2.dp),
+        modifier = modifier
+            .clickable { onClicked(item.id) }
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -55,29 +57,42 @@ fun MockLineView(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .clickable {
-                    onClicked(item.id)
-                },
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(modifier = Modifier.width(90.dp), contentAlignment = Alignment.Center) {
                 MockNetworkMethodView(item.method)
             }
 
-            Text(
-                text = item.urlPattern,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                style = FloconTheme.typography.bodySmall.copy(fontSize = 11.sp),
-                color = FloconTheme.colorPalette.onSurface,
-                modifier = Modifier.weight(2f)
-                    .background(
-                        color = FloconTheme.colorPalette.primary.copy(alpha = 0.8f),
-                        shape = RoundedCornerShape(4.dp),
+            if (item.displayName.isEmpty()) {
+                Text(
+                    text = item.urlPattern,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = FloconTheme.typography.titleSmall,
+                    color = FloconTheme.colorPalette.onSurface,
+                )
+            } else {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        text = item.displayName,
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = FloconTheme.typography.titleSmall,
+                        color = FloconTheme.colorPalette.onSurface,
                     )
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
-            )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = item.urlPattern,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = FloconTheme.typography.bodySmall,
+                        modifier = Modifier.fillMaxWidth().alpha(.5f),
+                    )
+                }
+            }
 
             Row(
                 modifier = Modifier
@@ -114,6 +129,7 @@ private fun MockLineViewPreview() {
                     isEnabled = true,
                     method = MockNetworkMethodUi.GET,
                     isShared = false,
+                    displayName = "Mock for YouTube video",
                 ),
                 onClicked = {},
                 onDeleteClicked = {},
@@ -136,6 +152,7 @@ private fun MockLineViewPreview_url() {
                     isEnabled = false,
                     method = MockNetworkMethodUi.ALL,
                     isShared = false,
+                    displayName = "Mock for YouTube video",
                 ),
                 onClicked = {},
                 onDeleteClicked = {},
@@ -158,6 +175,7 @@ private fun MockLineViewPreview_url_patch() {
                     isEnabled = true,
                     method = MockNetworkMethodUi.PATCH,
                     isShared = true,
+                    displayName = "Mock for YouTube video",
                 ),
                 onClicked = {},
                 onDeleteClicked = {},
