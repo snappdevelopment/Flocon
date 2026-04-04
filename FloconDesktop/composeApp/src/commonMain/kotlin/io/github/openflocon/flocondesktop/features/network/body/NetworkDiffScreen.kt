@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sebastianneubauer.jsontree.diff.JsonTreeDiffError
+import com.sebastianneubauer.jsontree.diff.JsonTreeDiffInfo
+import com.sebastianneubauer.jsontree.diff.defaultDarkDiffColors
 import io.github.openflocon.flocondesktop.features.network.body.model.NetworkDiffUi
 import io.github.openflocon.flocondesktop.features.network.body.model.previewNetworkDiffUi
 import io.github.openflocon.library.designsystem.FloconTheme
@@ -40,29 +42,15 @@ private fun NetworkDiffContent(
     diff: NetworkDiffUi,
     modifier: Modifier = Modifier,
 ) {
-    var diffError by remember(diff) { mutableStateOf<JsonTreeDiffError?>(null) }
+    var jsonTreeDiffInfo by remember(diff) { mutableStateOf<JsonTreeDiffInfo?>(null) }
 
     FloconSurface(
         modifier = modifier,
     ) {
-        val error = diffError
-        if(error != null) {
-            when(error) {
-                is JsonTreeDiffError.OriginalJsonError -> {
-                    Text(
-                        text = "Error in original Json:\n${error.throwable.localizedMessage}",
-                        style = FloconTheme.typography.bodyMedium
-                    )
-                }
-                is JsonTreeDiffError.RevisedJsonError -> {
-                    Text(
-                        text = "Error in clipboard Json:\n${error.throwable.localizedMessage}",
-                        style = FloconTheme.typography.bodyMedium
-                    )
-                }
-            }
-        } else {
-            Column {
+        Column {
+            val diffInfo = jsonTreeDiffInfo
+
+            if(diffInfo != null) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -75,21 +63,56 @@ private fun NetworkDiffContent(
                         text = "Original:",
                         style = FloconTheme.typography.titleMedium
                     )
-                    Text(
-                        modifier = Modifier.weight(1F),
-                        text = "Clipboard:",
-                        style = FloconTheme.typography.titleMedium
-                    )
-                }
 
-                FloconJsonTreeDiff(
-                    modifier = Modifier.fillMaxSize(),
-                    originalJson = diff.json,
-                    revisedJson = diff.clipboardJson,
-                    paddingValues = PaddingValues(8.dp),
-                    onError = { diffError = it }
-                )
+                    Row(modifier = Modifier.weight(1F)) {
+                        Text(
+                            modifier = Modifier.weight(1F),
+                            text = "Clipboard:",
+                            style = FloconTheme.typography.titleMedium
+                        )
+
+                        Text(
+                            text = "+${diffInfo.changeInfo.insertions} -${diffInfo.changeInfo.deletions}",
+                            style = FloconTheme.typography.titleMedium
+                        )
+                    }
+                }
             }
+
+            FloconJsonTreeDiff(
+                modifier = Modifier.fillMaxSize(),
+                originalJson = diff.json,
+                revisedJson = diff.clipboardJson,
+                paddingValues = PaddingValues(8.dp),
+                colors = defaultDarkDiffColors.copy(
+                    regularBackgroundColor = FloconTheme.colorPalette.surface
+                ),
+                onSuccess = { jsonTreeDiffInfo = it.info },
+                onLoading = {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        FloconCircularProgressIndicator()
+                    }
+                },
+                onError = {
+                    when(it.error) {
+                        is JsonTreeDiffError.OriginalJsonError -> {
+                            Text(
+                                text = "Error in original Json:\n${it.error.throwable.localizedMessage}",
+                                style = FloconTheme.typography.bodyMedium
+                            )
+                        }
+                        is JsonTreeDiffError.RevisedJsonError -> {
+                            Text(
+                                text = "Error in clipboard Json:\n${it.error.throwable.localizedMessage}",
+                                style = FloconTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+            )
         }
     }
 }

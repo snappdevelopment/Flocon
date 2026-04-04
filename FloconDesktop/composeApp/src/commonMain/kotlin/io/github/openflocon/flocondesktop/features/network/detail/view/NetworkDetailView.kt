@@ -475,7 +475,7 @@ private fun Response(
                             }
                             if (response.responseBodyIsNotBlank) {
                                 FloconIconButton(
-                                    tooltip = "Diff with Clipboard",
+                                    tooltip = "Compare with clipboard",
                                     imageVector = Icons.Outlined.Difference,
                                     onClick = { onAction(NetworkDetailAction.DiffWithClipboard(response.body)) }
                                 )
