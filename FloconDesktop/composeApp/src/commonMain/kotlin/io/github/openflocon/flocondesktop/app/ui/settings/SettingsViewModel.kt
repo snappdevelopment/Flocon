@@ -83,7 +83,10 @@ class SettingsViewModel(
             saveAdb()
             testAdbUseCase().fold(
                 doOnFailure = {
-                    feedbackDisplayer.displayMessage(getString(Res.string.settings_test_failure, it.localizedMessage))
+                    feedbackDisplayer.displayMessage(
+                        message = getString(Res.string.settings_test_failure, it.localizedMessage),
+                        type = FeedbackDisplayer.MessageType.Error
+                    )
                     initialSetupStateHolder.setRequiresInitialSetup()
                 },
                 doOnSuccess = {
